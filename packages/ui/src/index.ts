@@ -1,0 +1,1 @@
+export { cn } from '@altair/shared/lib/utils'
