@@ -59,15 +59,3 @@ ALTAIR is built around the idea that organizations should be able to anticipate 
 ALTAIR is developed by a **three-member student team** participating in the **MES Youth Hackathon 2026**, under the **Smarter Qatar** challenge.
 
 Our goal is to explore how artificial intelligence, logistics intelligence, and practical innovation can contribute to a smarter and more resilient Qatar.
-
----
-
-<div align="center">
-
-<p><strong>ALTAIR</strong></p>
-
-<p><em>Intelligence that keeps supply moving.</em></p>
-
-<p>MES Youth Hackathon 2026 · Smarter Qatar</p>
-
-</div>
