@@ -1,6 +1,6 @@
 # ALTAIR
 
-AI-powered supply chain intelligence and crisis management platform for Qatar logistics operations.
+AI-powered supply chain intelligence and crisis management platform for Qatar logistics operations
 
 ## Technology Stack
 
