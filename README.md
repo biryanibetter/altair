@@ -1,152 +1,73 @@
-# ALTAIR
+<div align="center">
 
-AI-powered supply chain intelligence and crisis management platform for Qatar logistics operations.
+<pre>
+ █████╗ ██╗  ████████╗ █████╗ ██╗██████╗
+██╔══██╗██║  ╚══██╔══╝██╔══██╗██║██╔══██╗
+███████║██║     ██║   ███████║██║██████╔╝
+██╔══██║██║     ██║   ██╔══██║██║██╔══██╗
+██║  ██║███████╗██║   ██║  ██║██║██║  ██║
+╚═╝  ╚═╝╚══════╝╚═╝   ╚═╝  ╚═╝╚═╝╚═╝  ╚═╝
+</pre>
 
-## Technology Stack
+<h2>Supply chain intelligence for an unpredictable world.</h2>
 
-- **Monorepo**: Turborepo + pnpm workspaces
-- **Frontend**: Next.js 15 (App Router) + React 19 + TypeScript
-- **Styling**: Tailwind CSS
-- **UI Components**: shadcn/ui (to be added)
-- **Validation**: Zod
-- **Testing**: Vitest
-- **Code Quality**: ESLint + Prettier
-- **CI/CD**: GitHub Actions
+<p><em>AI-powered logistics, crisis response, and supply chain resilience.</em></p>
 
-## Repository Structure
+<p>MES Youth Hackathon 2026 · Smarter Qatar</p>
 
-```
-altair/
-├── apps/
-│   └── web/              # Next.js application
-├── packages/
-│   ├── ui/               # Shared UI components
-│   ├── shared/           # Shared types, utilities, schemas
-│   ├── eslint-config/    # Shared ESLint configuration
-│   └── tsconfig/         # Shared TypeScript configurations
-├── .github/
-│   └── workflows/        # GitHub Actions CI
-├── .env.example          # Environment variable template
-├── package.json          # Root package.json
-├── pnpm-workspace.yaml   # pnpm workspace config
-├── turbo.json            # Turborepo config
-└── README.md
-```
+</div>
 
-## Getting Started
+---
 
-### Prerequisites
+## About
 
-- Node.js 20+
-- pnpm 11.5+
+ALTAIR is a supply chain intelligence platform designed to help businesses, industries, and essential service providers in Qatar navigate logistics disruptions and make better supply chain decisions.
 
-### Installation
+International shipping is vulnerable to geopolitical conflicts, trade restrictions, rising transportation costs, and unexpected shortages. When established supply routes become unreliable, finding alternatives can be expensive, time-consuming, and difficult.
 
-```bash
-# Clone the repository
-git clone https://github.com/<your-username>/altair.git
-cd altair
+ALTAIR aims to bring logistics intelligence, predictive analytics, and scenario planning into one platform, helping organizations evaluate their options and respond to disruptions more effectively.
 
-# Install dependencies
-pnpm install
+## Features
 
-# Copy environment variables
-cp .env.example .env.local
+| Feature | Description |
+| --- | --- |
+| Route Optimization | Compare land, sea, and air cargo routes based on cost, transit time, and reliability. |
+| Crisis Intelligence | Assess geopolitical disruptions and identify alternative transportation strategies. |
+| Shortage Forecasting | Anticipate potential supply shortages and identify vulnerable inventory. |
+| Supplier Discovery | Find alternative suppliers and explore Qatar-based sourcing opportunities. |
+| Cost Intelligence | Compare shipping, customs, handling, and other logistics expenses. |
+| Digital Twin Simulation | Simulate supply chain disruptions and evaluate different response strategies. |
+| Shipment & Inventory Monitoring | Monitor shipment information, stock levels, and supply dependencies. |
+| AI Logistics Assistant | Support logistics decisions with intelligent analysis and recommendations. |
+| Emergency Procurement | Explore alternative sourcing options for urgently needed materials and essential goods. |
+| Risk Assessment | Evaluate potential threats involving transportation networks, suppliers, and international trade. |
 
-# Start development server
-pnpm dev
-```
+## Project Scope
 
-The application will be available at `http://localhost:3000`.
+- **Visibility** — Provide a clearer understanding of logistics networks, vulnerabilities, and disruptions through centralized intelligence.
+- **Optimization** — Help organizations evaluate transportation and procurement alternatives while balancing cost, delivery time, and reliability.
+- **Resilience** — Strengthen preparedness by exploring alternative suppliers, transportation strategies, and crisis response scenarios.
 
-## Available Commands
+## Our Vision
 
-| Command | Description |
-|---------|-------------|
-| `pnpm install` | Install all dependencies |
-| `pnpm dev` | Start all development servers |
-| `pnpm build` | Build all packages and apps |
-| `pnpm lint` | Run ESLint across the monorepo |
-| `pnpm typecheck` | Run TypeScript type checking |
-| `pnpm test` | Run tests |
-| `pnpm format` | Format code with Prettier |
+To make supply chains more intelligent, adaptable, and resilient through accessible technology and data-driven decision-making.
 
-## Development Workflow
+ALTAIR is built around the idea that organizations should be able to anticipate challenges, understand their alternatives, and make informed decisions even when global supply networks face uncertainty.
 
-### Branch Naming Convention
+## The Team
 
-- `feat/dashboard` — Dashboard & UI work
-- `feat/route-engine` — Route optimization engine
-- `feat/crisis-intelligence` — Crisis simulation & data
-- `feat/api-integration` — Backend & API integration
+ALTAIR is developed by a **three-member student team** participating in the **MES Youth Hackathon 2026**, under the **Smarter Qatar** challenge.
 
-### Pull Request Process
+Our goal is to explore how artificial intelligence, logistics intelligence, and practical innovation can contribute to a smarter and more resilient Qatar.
 
-1. Create a feature branch from `main`
-2. Make changes with clear, atomic commits
-3. Run `pnpm lint`, `pnpm typecheck`, and `pnpm test` locally
-4. Open a Pull Request to `main`
-5. Ensure CI passes and at least one teammate reviews
-6. Merge after approval
+---
 
-### Shared Files (Coordinate Before Modifying)
+<div align="center">
 
-- `packages/shared/src/**` — Types, schemas, utilities
-- `packages/ui/src/**` — Shared components
-- `apps/web/tailwind.config.ts` — Design tokens
-- `.github/workflows/ci.yml` — CI configuration
-- `turbo.json` — Build pipeline
-- Root `package.json`, `pnpm-workspace.yaml`
+<p><strong>ALTAIR</strong></p>
 
-## Environment Variables
+<p><em>Intelligence that keeps supply moving.</em></p>
 
-Copy `.env.example` to `.env.local` and configure:
+<p>MES Youth Hackathon 2026 · Smarter Qatar</p>
 
-```bash
-NEXT_PUBLIC_APP_NAME=ALTAIR
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-NEXT_PUBLIC_API_URL=http://localhost:3000/api
-NEXT_PUBLIC_ENABLE_MOCK_DATA=true
-```
-
-## Team Collaboration
-
-### Developer Responsibilities
-
-| Developer | Focus Area |
-|-----------|------------|
-| Dev 1 | Frontend & UX (Dashboard, navigation, design system) |
-| Dev 2 | Logistics & Route Engine (Routing, optimization, simulation) |
-| Dev 3 | Crisis Intelligence & Data (Risk, shortage prediction, suppliers) |
-| Dev 4 | Backend & Integration (API contracts, AI infrastructure, deployment) |
-
-### Getting Started as a Teammate
-
-```bash
-# 1. Clone the repo
-git clone https://github.com/<org>/altair.git
-cd altair
-
-# 2. Install dependencies
-pnpm install
-
-# 3. Create feature branch
-git checkout -b feat/your-feature-name
-
-# 4. Start developing
-pnpm dev
-```
-
-## Future Development (Planned)
-
-- PostgreSQL/Supabase integration
-- AI provider integration (OpenAI, Anthropic)
-- Geospatial libraries (Mapbox, Leaflet)
-- External logistics APIs (MarineTraffic, AviationStack)
-- Real-time data feeds
-- Authentication (Better Auth)
-- Digital twin simulations
-
-## License
-
-Proprietary — Qatar Hackathon Project
+</div>
