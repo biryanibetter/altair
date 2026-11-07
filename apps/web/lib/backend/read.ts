@@ -1,9 +1,15 @@
+// ALTAIR Backend Read - With Demo Mode Support
 import 'server-only'
-import { createReadHandler, observationFromRow, type Reader, type Resource } from '@altair/backend'
+import { createReadHandler, type Reader, type Resource } from '@altair/backend'
 import { createSupabaseServerClient } from '../supabase/server'
-import { getAuthenticatedUser } from '../supabase/auth'
+import { getAuthenticatedUser, isDemoRequest } from '../supabase/auth'
 
 export async function authenticatedReader(): Promise<Reader | null> {
+  // In demo mode, return null - components will use local demo data
+  if (isDemoRequest()) {
+    return null
+  }
+  
   const client = await createSupabaseServerClient()
   if (!await getAuthenticatedUser(client)) return null
   return {
@@ -13,7 +19,7 @@ export async function authenticatedReader(): Promise<Reader | null> {
       if (cursor) query = query.gt('id', cursor)
       const { data, error } = await query
       if (error) throw new Error('read_failed')
-      return (data ?? []).map(observationFromRow)
+      return (data ?? []).map((await import('@altair/backend')).observationFromRow)
     },
     async status() {
       const { data, error } = await client.rpc('ingestion_status')

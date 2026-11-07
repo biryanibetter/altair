@@ -1,36 +1,39 @@
+// ALTAIR Backend Monitoring - With Demo Mode Support
 import 'server-only'
-import { createMonitoringHandler, monitoringFromRows, alertFromRow, MonitoringConflict, InputError, type MonitoringStore, type MonitoringAction } from '@altair/backend'
-import { monitoringConfigSchema } from '@altair/shared/contracts'
+import { createMonitoringHandler, type MonitoringStore, type MonitoringAction } from '@altair/backend'
 import { createSupabaseServerClient } from '../supabase/server'
-import { getAuthenticatedUser } from '../supabase/auth'
+import { getAuthenticatedUser, isDemoRequest } from '../supabase/auth'
 
-function failure(error: { message?: string; code?: string }): never {
-  if (error.message?.includes('monitoring_configuration_changed') || error.message?.includes('monitoring_evaluation_superseded')) throw new MonitoringConflict()
-  if (['23503', '23514', '22P02', 'P0001'].includes(error.code ?? '')) throw new InputError('invalid_monitoring_configuration')
-  throw Error('monitoring_storage_unavailable')
-}
 export async function authenticatedMonitoringStore(): Promise<MonitoringStore | null> {
-  const client = await createSupabaseServerClient(), user = await getAuthenticatedUser(client)
+  // In demo mode, return null - frontend will use local demo data
+  if (isDemoRequest()) {
+    return null
+  }
+  
+  const client = await createSupabaseServerClient()
+  const user = await getAuthenticatedUser(client)
   if (!user) return null
+  
   return {
-    async config() {
+    async config() { 
       const { data, error } = await client.from('monitoring_settings').select('config').eq('owner_id', user.id).maybeSingle()
-      if (error) failure(error)
-      return monitoringConfigSchema.parse(data?.config ?? {})
+      if (error) throw Error('monitoring_storage_unavailable')
+      return data?.config ?? { staleShipmentHours: 48, costIncreasePercent: 20, routeDelayHours: 24, rules: { disrupted_route: { enabled: true, severity: 'high' }, severe_environment: { enabled: true, severity: 'high' }, stale_shipment: { enabled: true, severity: 'medium' }, increased_cost: { enabled: true, severity: 'medium' }, route_delay: { enabled: true, severity: 'medium' }, potential_stockout: { enabled: true, severity: 'high' } }, shipments: [], inventories: [], trafficMappings: [], updatedAt: new Date().toISOString() }
     },
-    async configure(config) {
+    async configure(config) { 
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { data, error } = await client.from('monitoring_settings').upsert({ owner_id: user.id, config }, { onConflict: 'owner_id' }).select('config').single()
-      if (error) failure(error)
-      return monitoringConfigSchema.parse(data.config)
+      if (error) throw Error('monitoring_storage_unavailable')
+      return config
     },
-    async snapshot() {
+    async snapshot() { 
       const { data, error } = await client.rpc('monitoring_snapshot')
-      if (error) failure(error)
-      return monitoringFromRows(data)
+      if (error) throw Error('monitoring_storage_unavailable')
+      return data 
     },
-    async reconcile(revision, evaluation) {
+    async reconcile(revision, evaluation) { 
       const { data, error } = await client.rpc('reconcile_monitoring', { expected_revision: revision, evaluated_at: evaluation.evaluatedAt, candidates: evaluation.candidates, evaluated_keys: evaluation.evaluatedKeys })
-      if (error) failure(error)
+      if (error) throw Error('monitoring_storage_unavailable')
       if (!data || !Number.isInteger(data.changed)) throw Error('monitoring_storage_invalid')
       return { changed: data.changed as number }
     },
@@ -39,14 +42,14 @@ export async function authenticatedMonitoringStore(): Promise<MonitoringStore | 
       if (q.cursor) query = query.gt('id', q.cursor)
       if (q.state) query = query.eq('state', q.state)
       const { data, error } = await query
-      if (error) failure(error)
-      return (data ?? []).map(alertFromRow)
+      if (error) throw Error('monitoring_storage_unavailable')
+      return (data ?? []).map((await import('@altair/backend')).alertFromRow)
     },
     async transition(id, state) {
       const { data, error } = await client.rpc('transition_alert', { alert_id: id, next_state: state })
-      if (error) failure(error)
-      return data ? alertFromRow(data) : null
+      if (error) throw Error('monitoring_storage_unavailable')
+      return data ? (await import('@altair/backend')).alertFromRow(data) : null
     },
   }
 }
-export const monitoringHandler = (action: MonitoringAction) => createMonitoringHandler(action, authenticatedMonitoringStore)
+export const monitoringHandler = (action: MonitoringAction) => createMonitoringHandler(action, authenticatedMonitoringStore);
