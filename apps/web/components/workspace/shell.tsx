@@ -1,0 +1,26 @@
+'use client'
+import { useEffect, useState } from 'react'
+import { Bell, Box, Building2, Command, LayoutDashboard, Menu, Package, Route, Search, Settings2, Shield } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
+import { useData } from './data'
+import { ErrorMessage } from './common'
+import { Overview } from './overview'
+import { Shipments } from './shipments'
+import { RoutePlanning } from './routes'
+import { Inventory } from './inventory'
+import { Suppliers } from './suppliers'
+import { Alerts } from './alerts'
+import { Crisis } from './crisis'
+import { Assistant } from './assistant'
+
+export const pages = [ ['overview', 'Overview', LayoutDashboard], ['shipments', 'Shipments', Package], ['routes', 'Route Planning', Route], ['inventory', 'Inventory', Box], ['suppliers', 'Suppliers', Building2], ['alerts', 'Alerts & Risk', Bell], ['crisis', 'Crisis Command', Shield] ] as const
+export type PageId = typeof pages[number][0]
+export function Workspace({ email, signOut }: { email: string; signOut: () => Promise<void> }) {
+  const [page, setPage] = useState<PageId>('overview'), [collapsed, setCollapsed] = useState(false), [command, setCommand] = useState(false), [query, setQuery] = useState(''), [assistant, setAssistant] = useState(false), [account, setAccount] = useState(false), [error, setError] = useState<unknown>(null)
+  const data = useData()
+  useEffect(() => { const change = () => { const hash = location.hash.slice(1).split('?')[0]; if (pages.some(p => p[0] === hash)) setPage(hash as PageId) }; change(); window.addEventListener('hashchange', change); const key = (event: KeyboardEvent) => { if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') { event.preventDefault(); setCommand(value => !value) } }; window.addEventListener('keydown', key); return () => { window.removeEventListener('hashchange', change); window.removeEventListener('keydown', key) } }, [])
+  const navigate = (id: PageId) => { location.hash = id; setPage(id); setCommand(false) }
+  const title = pages.find(p => p[0] === page)![1]
+  return <div className={`app-shell ${collapsed ? 'collapsed' : ''}`}><aside className="sidebar"><a className="brand" href="#overview"><span>△</span><strong>ALTAIR</strong></a><div className="workspace-label"><b>N</b><span>My workspace<small>Shipping operations</small></span></div><nav aria-label="Main navigation">{pages.map(([id, label, Icon]) => <a key={id} href={`#${id}`} aria-current={page === id ? 'page' : undefined} title={label}><Icon size={15} /><span>{label}</span>{id === 'alerts' && data.alerts.filter(a => a.state === 'open').length > 0 ? <small>{data.alerts.filter(a => a.state === 'open').length}</small> : null}</a>)}</nav><button className="account-control" onClick={() => setAccount(true)}><Settings2 size={15} /><span>Account & settings</span></button></aside><div className="workspace"><header className="topbar"><button aria-label="Toggle sidebar" onClick={() => setCollapsed(!collapsed)}><Menu size={16} /></button><div className="breadcrumb"><span>Operations</span><span>/</span><b>{title}</b></div><button className="search-trigger" onClick={() => setCommand(true)}><Search size={14} /><span>Search or ask ALTAIR</span><kbd>Ctrl K</kbd></button><button aria-label="Notifications" onClick={() => navigate('alerts')}><Bell size={16} /></button></header><main className="workspace-main" key={page}>{data.loading ? <div className="loading-line" role="status" aria-label="Loading workspace" /> : null}{page === 'overview' ? <Overview navigate={navigate} /> : page === 'shipments' ? <Shipments navigate={navigate} /> : page === 'routes' ? <RoutePlanning /> : page === 'inventory' ? <Inventory /> : page === 'suppliers' ? <Suppliers /> : page === 'alerts' ? <Alerts /> : <Crisis />}</main></div><Dialog open={command} onOpenChange={setCommand}><DialogContent className="command-dialog"><DialogTitle className="sr-only">Search and commands</DialogTitle><DialogDescription className="sr-only">Navigate the workspace or open the assistant</DialogDescription><label className="command-search"><Search size={17} /><input autoFocus placeholder="Find a page, shipment or ask AI…" value={query} onChange={e => setQuery(e.target.value)} /></label>{pages.filter(p => p[1].toLowerCase().includes(query.toLowerCase())).map(([id, label, Icon]) => <button className="command-row" key={id} onClick={() => navigate(id)}><Icon size={16} />{label}</button>)}{query ? data.shipments.filter(s => s.id.includes(query)).slice(0, 5).map(s => <button className="command-row" key={s.id} onClick={() => { location.hash = `shipments?id=${s.id}`; setPage('shipments'); setCommand(false) }}><Package size={16} />{s.id}</button>) : null}<button className="command-row" onClick={() => { setCommand(false); setAssistant(true) }}><Command size={16} />Ask ALTAIR assistant</button></DialogContent></Dialog><Assistant open={assistant} onOpenChange={setAssistant} context={title} /><Dialog open={account} onOpenChange={setAccount}><DialogContent><DialogTitle>Account</DialogTitle><DialogDescription>{email}</DialogDescription><ErrorMessage error={error} /><Button variant="outline" onClick={async () => { try { await signOut() } catch (e) { setError(e) } }}>Sign out</Button></DialogContent></Dialog></div>
+}
