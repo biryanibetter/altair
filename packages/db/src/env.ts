@@ -1,5 +1,5 @@
 export function getDatabaseUrl(): string {
-  const value = process.env.DATABASE_URL
+  const value = process.env.DATABASE_URL ?? process.env.POSTGRES_URL ?? process.env.POSTGRES_PRISMA_URL
   if (!value) throw new Error('DATABASE_URL is not configured')
 
   let url: URL
