@@ -1,3 +1,157 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+:root {
+  /* Midnight Slate palette */
+  --background: #080d14;
+  --foreground: #e4ebf2;
+  --card: #141f2d;
+  --card-foreground: #e4ebf2;
+  --popover: #141f2d;
+  --popover-foreground: #e4ebf2;
+  --primary: #344f6d;
+  --primary-foreground: #e4ebf2;
+  --secondary: #0f1722;
+  --secondary-foreground: #e4ebf2;
+  --muted: #0f1722;
+  --muted-foreground: #9aa9ba;
+  --accent: #1b2b3c;
+  --accent-foreground: #e4ebf2;
+  --destructive: #b95146;
+  --destructive-foreground: #e4ebf2;
+  --border: #273648;
+  --input: #273648;
+  --ring: #344f6d;
+  --radius: 0.5rem;
+  --status-red: #b95146;
+  --status-amber: #b8862c;
+  --status-green: #5d8a5d;
+  --crisis: #b95146;
+  --warning: #b8862c;
+  --success: #5d8a5d;
+  --sidebar-bg: #080d14;
+  --sidebar-border: #273648;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar-bg: var(--sidebar-bg);
+  --color-sidebar-border: var(--sidebar-border);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+* {
+  border-color: var(--border);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Atlassian Sans", "Segoe UI", Roboto, sans-serif;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #273648;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3e5266;
+}
+
+/* Leaflet dark overrides — dark basemap */
+.leaflet-container {
+  background: #0a0f18 !important;
+}
+.leaflet-tile-pane {
+  filter: brightness(0.5) contrast(1.05) saturate(0.4) hue-rotate(185deg);
+}
+.leaflet-control-zoom a {
+  background: #141f2d !important;
+  color: #e4ebf2 !important;
+  border-color: #273648 !important;
+}
+
+/* Static status dot — no pulsing/animation */
+.live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #5d8a5d;
+  box-shadow: 0 0 0 1px rgba(93, 138, 93, 0.4);
+}
+
+.live-dot--crisis {
+  background: #b95146;
+  box-shadow: 0 0 0 1px rgba(185, 81, 70, 0.4);
+}
+
+/* Route highlight pill — small, rounded, attached */
+.route-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 20px;
+  padding: 0 8px;
+  border-radius: 10px;
+  border: 1px solid #273648;
+  background: #1b2b3c;
+  color: #9aa9ba;
+  font-size: 11px;
+  font-weight: 500;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  line-height: 1;
+  white-space: nowrap;
+}
+.route-pill--selected {
+  background: #344f6d;
+  border-color: #344f6d;
+  color: #e4ebf2;
+}
+.route-pill--critical {
+  background: rgba(185, 81, 70, 0.15);
+  border-color: #b95146;
+  color: #e4c6c2;
+}
+.route-pill--warning {
+  background: rgba(184, 134, 44, 0.15);
+  border-color: #b8862c;
+  color: #e6d5c0;
+}
+.route-pill--ok {
+  background: rgba(93, 138, 93, 0.15);
+  border-color: #5d8a5d;
+  color: #c9d8c9;
+}
+
+/* Compact control height */
+.compact-h { height: 1.5rem; }
