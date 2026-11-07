@@ -1,6 +1,6 @@
 # ALTAIR Frontend Integration Handoff
 
-Internal · Task 010 local integration foundation, 2026-11-07. No frontend-owned pages, components or styling were changed. Earlier Task 009A/009B notes below are historical where superseded by section 8.
+Internal · Task 010 local integration foundation, 2026-11-07. Section 9 records the subsequent approved enterprise UI integration; sections 1–8 remain the historical backend/frontend contract record. Earlier Task 009A/009B notes below are historical where superseded by section 8 or 9.
 
 Start with [API Reference](ALTAIR_API_REFERENCE.md); consult [Backend Guide](ALTAIR_BACKEND_GUIDE.md) for calculations and [System Status](ALTAIR_SYSTEM_STATUS.md) for verification/activation gates.
 
@@ -201,3 +201,45 @@ POST `/api/v1/routes/compare` with the same validated routeRequest, then POST `/
 **Frontend teammate:** implement a browser `createBrowserClient` using the project publishable key and same origin, an actual sign-in/sign-out UI and approved redirect/callback/PKCE flow, and clear private cached state and Realtime subscriptions on sign-out/account change. The backend `apps/web/middleware.ts` refreshes browser cookies into both request and response before protected requests; route handlers independently call `auth.getUser()` and RLS enforces owner scope. Treat expired/invalid cookies as sign-in state, service failure as 503; do not swallow 401 or retry writes on uncertain response. Validate input/output with the versioned schemas; render nulls as unavailable, historical/estimated/simulated nature separately from freshness and page scopes honestly. Use real fetched IDs, not test UUIDs. Never import backend/DB into client components or expose `DATABASE_URL`, `INGESTION_SECRET`, provider keys or Supabase secret key.
 
 **Integration order:** agree shared-contract ownership before merging additive `integration.ts` and `index.ts` exports; land reviewed DB/auth/API code on an approved integration branch without overwriting teammate UI; integrate browser Auth; fetch products/locations/warehouses; create an owned warehouse and shipment; compare routes; create/execute/compare scenario; create stock/forecast; search supplier evidence; configure monitoring/evaluate/alerts; opt into AI only after privacy/model verification. Direct user-facing supplier, product or transport-catalog creation is deliberately absent (trusted curation required); movement/order history lists, carrier tracking and dashboard totals remain missing. A disposable test fixture in `packages/backend/test/integration-foundation.test.ts` seeds the **HYPOTHETICAL** Qatar graph, equipment, owner stock/shipment and supplier evidence only inside PGlite; it never seeds production.
+
+## 9. Approved enterprise UI integration (2026-11-07)
+
+Sections 1–8 described a checkout with no frontend. That is no longer true. The approved premium design was implemented on `feat/enterprise-shipping-integration` against the existing backend; no mock-data screens or duplicate provider adapters were imported.
+
+**Shipped surface**
+
+- Exactly seven sidebar destinations: Overview, Shipments, Route Planning, Inventory, Suppliers, Alerts & Risk, Crisis Command. Digital Twin, resilience and compliance are tabs inside Crisis Command; monitoring and environment observations are inside Alerts & Risk.
+- One shell (`apps/web/components/workspace/shell.tsx`) with logo, single workspace selector, seven nav links, one account control, breadcrumb, global search/<kbd>Ctrl</kbd>+<kbd>K</kbd> command palette, notifications and the AI drawer (`assistant.tsx`).
+- shadcn/ui primitives reused from `origin/feat/aiden-altair-ui`; one neutral theme in `apps/web/app/globals.css`; Geist Sans/Mono through `next/font`.
+- Cookie-based Supabase auth (`auth.tsx`, `lib/supabase/*`) and middleware refresh. Client requests go through `lib/client/api.ts`, which validates each response against its shared Zod schema, clears state on 401 and preserves cursor pagination.
+
+**Screen-to-endpoint mapping added**
+
+| UI area | Endpoints used |
+|---|---|
+| Overview | `GET /observations`, `/risks`, plus catalog/shipment/alert reads |
+| Shipments | `GET/POST /shipments`, `PATCH /inventory/replenishments/{id}`, `GET/POST /shipments/{id}/events` |
+| Route Planning | `POST /routes/compare`; save result as an immutable shipment event |
+| Inventory | `GET/POST /inventory`, `PATCH /inventory/{id}`, `POST /inventory/movements`, `/inventory/orders`, `POST /forecasts` |
+| Suppliers | `POST /suppliers/search` |
+| Alerts & Risk | `GET/PUT /monitoring/config`, `POST /monitoring/evaluate`, `GET /alerts`, `PATCH /alerts/{id}`, `GET /weather` |
+| Crisis Command | `GET/POST /scenarios`, `GET /scenarios/{id}`, `POST /scenarios/{id}/execute`, `GET /scenarios/{id}/compare`, `GET /risks`, `POST /import-dependencies`, `GET /trade`, `GET /ingestion/status`, `GET /freshness` |
+| AI drawer | `POST /assistant/chat` with explicit tool approval |
+
+**Shipment lifecycle**
+
+`packages/db/drizzle/0009_shipping_lifecycle.sql` adds owner-scoped, append-only shipment events and a bounded request/response function. It is **local only**; the hosted database has not been migrated. `packages/backend/test/shipping-lifecycle.test.ts` proves owner isolation, idempotency, immutable events and bounded responses on PGlite. Until an authorized operator applies the migration, hosted shipment events will be unavailable rather than simulated.
+
+**Verification boundary**
+
+- Pass locally on Node 22.23.4: web typecheck, lint (0 errors, one pre-existing unused import in the teammate dropdown primitive), production build (17 routes), web tests 26/26, backend tests 145 pass with 7 live tests skipped.
+- Browser-verified: sign-in/sign-up UI, Geist Sans and Mono loaded, `#080808` background, no horizontal overflow, no application console errors.
+- Verified honestly failing: unauthenticated `/api/v1/shipments` → 401; local `/api/v1/health` → 503 `database:disconnected`.
+- **Not verified:** an authenticated browser journey against a live database, hosted migration/RLS activation, live provider feeds, and live LLM inference. Missing provider credentials are rendered as configuration states, never invented observations.
+
+**Next gates**
+
+1. Supply an existing test account (or authorize a disposable user) to verify the authenticated journeys end to end.
+2. Review the local integration commits and diff/secret audit.
+3. Separately authorize pushing/opening the integration PR; authorize hosted migration activation separately again.
+4. Merge to `main` and delete the branch only with explicit approval.
