@@ -1,5 +1,4 @@
 {
-  "extends": "@altair/tsconfig/nextjs.json",
   "compilerOptions": {
     "target": "ES2017",
     "lib": ["dom", "dom.iterable", "esnext"],
@@ -19,12 +18,7 @@
         "name": "next"
       }
     ],
-    "paths": {
-      "@/*": ["./*"],
-      "@altair/ui/*": ["../../packages/ui/src/*"],
-      "@altair/shared/*": ["../../packages/shared/src/*"],
-      "@altair/engine/*": ["../../packages/engine/src/*"]
-    }
+    "paths": { "@/*": ["./*"] }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
