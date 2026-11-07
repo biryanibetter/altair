@@ -22,8 +22,11 @@ export interface ScenarioResult {
     }>
     supply: Array<{
       productId: string
+      available: string
+      demand: string
       shortage: string | null
       complete: boolean
+      reasons: string[]
     }>
   }
   simulated: {
@@ -40,11 +43,15 @@ export interface ScenarioResult {
       productId: string
       shortage: string | null
       complete: boolean
+      available: string
+      demand: string
+      reasons: string[]
     }>
   }
   changes: Array<{
     kind: string
-    [key: string]: unknown
+    target: string
+    reason: string
   }>
   limitations: string[]
 }
@@ -149,8 +156,8 @@ export async function executeScenarioDemo(scenarioId: string): Promise<ScenarioR
       ],
     },
     changes: [
-      { target: 'routes', reason: 'Sea routes disrupted, air alternatives prioritized' },
-      { target: 'supply', reason: 'Demand surge exceeds available inventory' },
+      { kind: 'route_changes', target: 'routes', reason: 'Sea routes disrupted, air alternatives prioritized' },
+      { kind: 'supply_changes', target: 'supply', reason: 'Demand surge exceeds available inventory' },
     ],
     limitations: [
       'Demo mode uses deterministic simulated data',
