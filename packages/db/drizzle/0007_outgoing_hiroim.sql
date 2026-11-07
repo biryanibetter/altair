@@ -1,0 +1,1 @@
+CREATE INDEX "observations_traffic_identity_time_idx" ON "provider_observations" USING btree (("data"->>'providerId'),"observed_at" DESC NULLS LAST) WHERE "provider_observations"."kind" = 'traffic';

@@ -1,0 +1,1 @@
+ALTER TABLE "ingestion_state" ADD COLUMN "scope" text DEFAULT 'default' NOT NULL;
