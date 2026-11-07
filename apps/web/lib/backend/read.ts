@@ -5,8 +5,8 @@ import { createSupabaseServerClient } from '../supabase/server'
 import { getAuthenticatedUser, isDemoRequest } from '../supabase/auth'
 
 export async function authenticatedReader(): Promise<Reader | null> {
-  // In demo mode, return null - components will use local demo data
-  if (isDemoRequest()) {
+  // In demo mode, return null - frontend will use local demo data
+  if (await isDemoRequest()) {
     return null
   }
   

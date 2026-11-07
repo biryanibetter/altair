@@ -11,7 +11,7 @@ const makeRequest = (input: unknown, query = false) => new Request(`http://altai
 
 export const assistantChatHandler = createAssistantHandler(async () => {
   // In demo mode, provide basic demo responses
-  if (isDemoRequest()) {
+  if (await isDemoRequest()) {
     return {
       provider: new OpenRouterProvider(process.env),
       signal: AbortSignal.timeout(45000),
@@ -35,8 +35,8 @@ export const assistantChatHandler = createAssistantHandler(async () => {
   if (!user) return null
   const client = await createSupabaseServerClient((url, init) => globalThis.fetch(url, { ...init, signal: AbortSignal.any([...(init?.signal ? [init.signal] : []), signal, AbortSignal.timeout(5000)]) }))
   
-  const supply = (action: Parameters<typeof createSupplyHandler>[0]) => createSupplyHandler(action, () => authenticatedSupplyStore({ client, user }))
-  const scenario = (action: Parameters<typeof createIntelligenceHandler>[0]) => createIntelligenceHandler(action, () => authenticatedIntelligenceStore({ client, user }))
+  const supply = (action: Parameters<typeof createSupplyHandler>[0]) => createSupplyHandler(action, authenticatedSupplyStore)
+  const scenario = (action: Parameters<typeof createIntelligenceHandler>[0]) => createIntelligenceHandler(action, authenticatedIntelligenceStore)
   
   const dispatch: ToolDispatch = async (name: string, input: unknown, toolSignal?: AbortSignal) => {
     toolSignal?.throwIfAborted()

@@ -7,7 +7,7 @@ import { demoLocations, demoProducts, demoWarehouses, getDemoState, setDemoState
 
 export async function authenticatedIntegrationStore(): Promise<IntegrationStore | null> {
   // In demo mode, use demo data
-  if (isDemoRequest()) {
+  if (await isDemoRequest()) {
     return {
       async list(resource, limit = 100, cursor, countryCode) {
         let data: unknown[] = []
@@ -32,7 +32,10 @@ export async function authenticatedIntegrationStore(): Promise<IntegrationStore 
         }
         
         if (cursor) {
-          const cursorIndex = data.findIndex((item: { id: string }) => item.id === cursor)
+          const cursorIndex = data.findIndex((item: unknown) => {
+            const obj = item as { id?: string }
+            return obj.id === cursor
+          })
           if (cursorIndex >= 0) data = data.slice(cursorIndex + 1)
         }
         
@@ -68,30 +71,30 @@ export async function authenticatedIntegrationStore(): Promise<IntegrationStore 
           quantity: input.quantity,
           unit: input.unit,
           routeRequest: input.routeRequest ? { 
-        ...input.routeRequest, 
-        shipment: { ...input.routeRequest.shipment, handling: input.routeRequest.shipment.handling ?? [] },
-        preferences: { 
-          modes: (input.routeRequest.preferences?.modes ?? ['land', 'sea', 'air']) as ('land' | 'sea' | 'air')[], 
-          allowHypothetical: input.routeRequest.preferences?.allowHypothetical ?? false, 
-          enrichGeometry: input.routeRequest.preferences?.enrichGeometry ?? false 
-        },
-        constraints: { 
-          maxHops: input.routeRequest.constraints?.maxHops ?? 6, 
-          maxExpansions: input.routeRequest.constraints?.maxExpansions ?? 5000, 
-          maxAlternatives: input.routeRequest.constraints?.maxAlternatives ?? 10, 
-          requireConfirmed: input.routeRequest.constraints?.requireConfirmed ?? false, 
-          minConfidence: input.routeRequest.constraints?.minConfidence ?? 0, 
-          excludedNodeIds: input.routeRequest.constraints?.excludedNodeIds ?? [], 
-          excludedEdgeIds: input.routeRequest.constraints?.excludedEdgeIds ?? [],
-          maxDurationHours: input.routeRequest.constraints?.maxDurationHours,
-          maxCost: input.routeRequest.constraints?.maxCost,
-        },
-        priorities: { 
-        cost: input.routeRequest.priorities?.cost ?? 1, 
-        time: input.routeRequest.priorities?.time ?? 1, 
-        risk: input.routeRequest.priorities?.risk ?? 1 
-      },
-      } : null,
+            ...input.routeRequest, 
+            shipment: { ...input.routeRequest.shipment, handling: input.routeRequest.shipment.handling ?? [] },
+            preferences: { 
+              modes: (input.routeRequest.preferences?.modes ?? ['land', 'sea', 'air']) as ('land' | 'sea' | 'air')[], 
+              allowHypothetical: input.routeRequest.preferences?.allowHypothetical ?? false, 
+              enrichGeometry: input.routeRequest.preferences?.enrichGeometry ?? false 
+            },
+            constraints: { 
+              maxHops: input.routeRequest.constraints?.maxHops ?? 6, 
+              maxExpansions: input.routeRequest.constraints?.maxExpansions ?? 5000, 
+              maxAlternatives: input.routeRequest.constraints?.maxAlternatives ?? 10, 
+              requireConfirmed: input.routeRequest.constraints?.requireConfirmed ?? false, 
+              minConfidence: input.routeRequest.constraints?.minConfidence ?? 0, 
+              excludedNodeIds: input.routeRequest.constraints?.excludedNodeIds ?? [], 
+              excludedEdgeIds: input.routeRequest.constraints?.excludedEdgeIds ?? [],
+              maxDurationHours: input.routeRequest.constraints?.maxDurationHours,
+              maxCost: input.routeRequest.constraints?.maxCost,
+            },
+            priorities: { 
+              cost: input.routeRequest.priorities?.cost ?? 1, 
+              time: input.routeRequest.priorities?.time ?? 1, 
+              risk: input.routeRequest.priorities?.risk ?? 1 
+            },
+          } : null,
           inventoryId: null,
           confirmedQuantity: null,
           status: 'planned' as const,

@@ -10,9 +10,42 @@ export interface ScenarioResult {
   scenarioId: string
   engineVersion: string
   evaluatedAt: string
-  baseline: any
-  simulated: any
-  changes: any[]
+  baseline: {
+    routes: Array<{
+      id: string
+      modes: string[]
+      cost: { total: { amount: string; currency: string }; complete: boolean }
+      durationHours: { min: number; max: number }
+      risk: number
+      confidence: number
+      feasible: boolean
+    }>
+    supply: Array<{
+      productId: string
+      shortage: string | null
+      complete: boolean
+    }>
+  }
+  simulated: {
+    routes: Array<{
+      id: string
+      modes: string[]
+      cost: { total: { amount: string; currency: string }; complete: boolean }
+      durationHours: { min: number; max: number }
+      risk: number
+      confidence: number
+      feasible: boolean
+    }>
+    supply: Array<{
+      productId: string
+      shortage: string | null
+      complete: boolean
+    }>
+  }
+  changes: Array<{
+    kind: string
+    [key: string]: unknown
+  }>
   limitations: string[]
 }
 
@@ -134,7 +167,7 @@ export function getDemoScenarios() {
 }
 
 // Create a new scenario in demo mode
-export function createDemoScenario(input: any) {
+export function createDemoScenario(input: Record<string, unknown>) {
   const newScenario = {
     id: `demo-scenario-${Date.now()}`,
     ownerId: 'demo-owner',

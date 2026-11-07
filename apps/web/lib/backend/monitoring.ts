@@ -6,7 +6,7 @@ import { getAuthenticatedUser, isDemoRequest } from '../supabase/auth'
 
 export async function authenticatedMonitoringStore(): Promise<MonitoringStore | null> {
   // In demo mode, return null - frontend will use local demo data
-  if (isDemoRequest()) {
+  if (await isDemoRequest()) {
     return null
   }
   

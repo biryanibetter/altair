@@ -2,7 +2,7 @@
 import 'server-only'
 import type { SupabaseClient, User, UserIdentity } from '@supabase/supabase-js'
 import { createSupabaseServerClient } from './server'
-import { isDemoMode } from '@/lib/demo/config'
+import { cookies } from 'next/headers'
 
 // Demo user for demo mode
 const DEMO_USER = {
@@ -32,11 +32,21 @@ const DEMO_USER = {
   factors: [],
 } as User
 
+// Check if demo mode cookie is set
+async function isDemoCookieSet(): Promise<boolean> {
+  try {
+    const store = await cookies()
+    return store.get('altair-demo-enabled')?.value === 'true'
+  } catch {
+    return false
+  }
+}
+
 // Always verify with Supabase Auth; never authorize from a decoded cookie or getSession().
 // In demo mode, return a deterministic demo user.
 export async function getAuthenticatedUser(client?: Pick<SupabaseClient, 'auth'>): Promise<User | null> {
   // Check demo mode first (server-side)
-  if (isDemoMode()) {
+  if (await isDemoCookieSet()) {
     return DEMO_USER
   }
   
@@ -46,6 +56,6 @@ export async function getAuthenticatedUser(client?: Pick<SupabaseClient, 'auth'>
 }
 
 // Check if current request is in demo mode
-export function isDemoRequest(): boolean {
-  return isDemoMode()
+export async function isDemoRequest(): Promise<boolean> {
+  return isDemoCookieSet()
 }

@@ -4,14 +4,14 @@ import { createIntelligenceHandler, type IntelligenceStore } from '@altair/backe
 import { createSupabaseServerClient } from '../supabase/server'
 import { getAuthenticatedUser, isDemoRequest } from '../supabase/auth'
 
-export async function authenticatedIntelligenceStore(context?: { client: Awaited<ReturnType<typeof createSupabaseServerClient>>; user: { id: string } }): Promise<IntelligenceStore | null> {
-  // In demo mode, return null - components will use local demo data
-  if (isDemoRequest()) {
+export async function authenticatedIntelligenceStore(): Promise<IntelligenceStore | null> {
+  // In demo mode, return null - frontend will use local demo data
+  if (await isDemoRequest()) {
     return null
   }
   
-  const client = context?.client ?? await createSupabaseServerClient()
-  const user = context?.user ?? await getAuthenticatedUser(client)
+  const client = await createSupabaseServerClient()
+  const user = await getAuthenticatedUser(client)
   if (!user) return null
   
   return {

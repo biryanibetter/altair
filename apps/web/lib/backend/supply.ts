@@ -4,18 +4,16 @@ import { createSupplyHandler, type SupplyStore, type SupplyAction } from '@altai
 import { createSupabaseServerClient } from '../supabase/server'
 import { getAuthenticatedUser, isDemoRequest } from '../supabase/auth'
 
-export async function authenticatedSupplyStore(context?: { client: Awaited<ReturnType<typeof createSupabaseServerClient>>; user: { id: string } }): Promise<SupplyStore | null> {
-  // In demo mode, return null - components will use local demo data
-  if (isDemoRequest()) {
+export async function authenticatedSupplyStore(): Promise<SupplyStore | null> {
+  // In demo mode, return null - frontend will use local demo data
+  if (await isDemoRequest()) {
     return null
   }
   
-  const client = context?.client ?? await createSupabaseServerClient()
-  const user = context?.user ?? await getAuthenticatedUser(client)
+  const client = await createSupabaseServerClient()
+  const user = await getAuthenticatedUser(client)
   if (!user) return null
   
-  // This won't be called in demo mode since we return null above
-  // The frontend components handle demo mode directly
   return {
     async list(q) { return [] },
     async write(action, input, id) { return null },

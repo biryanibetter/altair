@@ -45,7 +45,7 @@ export const defaultDemoConfig: DemoConfig = {
 // Demo mode storage key
 export const DEMO_STORAGE_KEY = 'altair-demo-state'
 
-// Check if demo mode is enabled
+// Check if demo mode is enabled (client-side)
 export function isDemoMode(): boolean {
   if (typeof window !== 'undefined') {
     // Client-side: check localStorage first, then env
@@ -53,6 +53,12 @@ export function isDemoMode(): boolean {
     if (stored !== null) return stored === 'true'
   }
   return defaultDemoConfig.enabled
+}
+
+// Check if demo mode is enabled from request headers (server-side)
+export function isDemoModeFromHeaders(headers: Headers): boolean {
+  const cookie = headers.get('cookie') || ''
+  return cookie.includes('altair-demo-enabled=true')
 }
 
 // Enable/disable demo mode

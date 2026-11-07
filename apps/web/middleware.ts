@@ -5,8 +5,16 @@ import { NextResponse, type NextRequest } from 'next/server'
 // This is not an authorization gate: each API verifies auth.getUser() itself.
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request })
+  
+  // Check for demo mode cookie
+  const demoEnabled = request.cookies.get('altair-demo-enabled')?.value === 'true'
+  if (demoEnabled) {
+    return response
+  }
+  
   const url = process.env.SUPABASE_URL, key = process.env.SUPABASE_PUBLISHABLE_KEY
   if (!url || !key) return response // Protected handlers report unavailable configuration.
+  
   const client = createServerClient(url, key, {
     cookies: {
       getAll: () => request.cookies.getAll(),
@@ -22,4 +30,4 @@ export async function middleware(request: NextRequest) {
   return response
 }
 
-export const config = { matcher: ['/((?!api/internal|api/v1/health|_next/static|_next/image|favicon.ico).*)'] }
+export const config = { matcher: ['/((?!api/internal|api/v1/health|api/v1/demo|_next/static|_next/image|favicon.ico).*)'] }
